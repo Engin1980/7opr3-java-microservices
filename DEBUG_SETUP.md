@@ -1,3 +1,9 @@
+ TODO : this file
+ 
+
+problém - když se buildují docker fily, tak se znovu stahuje maven image a to trvá dlouho. Níže je řešení pro toto.
+
+
 w# Debugging Java Microservices v Docker - Nastavení
 
 ## Problém
