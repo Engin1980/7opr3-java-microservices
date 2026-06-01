@@ -1,0 +1,115 @@
+version: '3.8'
+
+name: java-microservices
+
+services:
+  # MariaDB Database Service
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb-service
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+    ports:
+      - "${MARIADB_PORT}:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./init-databases.sql:/docker-entrypoint-initdb.d/init-databases.sql
+    networks:
+      - microservices-network
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      timeout: 20s
+      retries: 10
+      interval: 10s
+
+  # AppLogService
+  applogservice:
+    build:
+      context: ./AppLogService
+      dockerfile: Dockerfile
+    container_name: applog-service
+    environment:
+      SPRING_APPLICATION_NAME: AppLogService
+      SPRING_DATASOURCE_URL: jdbc:mariadb://mariadb:3306/${APPLOGSERVICE_DB_NAME}
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.mariadb.jdbc.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.MariaDBDialect
+      SERVER_PORT: 9100
+      DEBUG_PORT: 9101
+    ports:
+      - "${APPLOGSERVICE_PORT}:9100"
+      - 9101:9101
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    networks:
+      - microservices-network
+    volumes:
+      - maven-cache:/root/.m2
+
+  # AppUserService
+  appuserservice:
+    build:
+      context: ./AppUserService
+      dockerfile: Dockerfile
+    container_name: appuser-service
+    environment:
+      SPRING_APPLICATION_NAME: AppUserService
+      SPRING_DATASOURCE_URL: jdbc:mariadb://mariadb:3306/${APPUSERSERVICE_DB_NAME}
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.mariadb.jdbc.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.MariaDBDialect
+      SERVER_PORT: 9200
+      DEBUG_PORT: 9201
+    ports:
+      - "${APPUSERSERVICE_PORT}:9200"
+      - 9201:9201
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    networks:
+      - microservices-network
+    volumes:
+      - maven-cache:/root/.m2
+
+  # AuthService
+  authservice:
+    build:
+      context: ./AuthService
+      dockerfile: Dockerfile
+    container_name: auth-service
+    environment:
+      SPRING_APPLICATION_NAME: AuthService
+      SPRING_DATASOURCE_URL: jdbc:mariadb://mariadb:3306/${AUTHSERVICE_DB_NAME}
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.mariadb.jdbc.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.MariaDBDialect
+      SERVER_PORT: 9300
+      DEBUG_PORT: 9301
+    ports:
+      - "${AUTHSERVICE_PORT}:9300"
+      - 9301:9301
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    networks:
+      - microservices-network
+    volumes:
+      - maven-cache:/root/.m2
+
+volumes:
+  mariadb_data:
+    driver: local
+  maven-cache:
+    driver: local
+
+networks:
+  microservices-network:
+    driver: bridge
+
