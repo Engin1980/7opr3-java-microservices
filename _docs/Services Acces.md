@@ -911,7 +911,16 @@ Jestli chceš, můžu ti ukázat i:
 * jak z toho udělat „mini API gateway pattern“
 * nebo jak to později přejde 1:1 do Kubernetes Ingressu (to je skoro stejný koncept)
 
-# jak se tam dělá autorizace? když B potřebuje roli? a A volá B?
+# Poznámka k tomuto projektu
+
+**NGINX byl nahrazen Spring Cloud Gateway** pro lepší integraci s Java ekosystémem.
+
+## Spring Cloud Gateway vs NGINX
+
+- **Spring Cloud Gateway**: Java-based router, lepší integrace se Spring Boot, dynamická konfigurace
+- **NGINX**: Lightweight webserver, statická konfigurace, univerzální
+
+Pro tento projekt se Spring Cloud Gateway hodí lépe, protože všechny služby jsou v Javě.
 
 Tady se dostáváš k jedné z nejdůležitějších věcí mikroservis: **autorizace se nesmí „ztratit“ mezi službami**.
 
