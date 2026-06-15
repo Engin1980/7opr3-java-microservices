@@ -7,21 +7,21 @@ import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
 public class AppUser {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
 
-  @Getter
+  @Setter
   private String email;
-
-  @Getter
+  @Setter
   private String name;
-
-  @Getter
+  @Setter
   private String surname;
 }

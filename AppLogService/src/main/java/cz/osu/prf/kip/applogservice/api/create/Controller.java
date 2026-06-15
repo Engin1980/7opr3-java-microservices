@@ -17,7 +17,7 @@ public class Controller {
   private AppLogItemRepository repository;
 
   private static AppLogItem to(@RequestBody Request request) {
-    Assert.IsValid(request);
+    Assert.isValid(request);
 
     AppLogItem ret = new AppLogItem();
     ret.setMessage(request.message());

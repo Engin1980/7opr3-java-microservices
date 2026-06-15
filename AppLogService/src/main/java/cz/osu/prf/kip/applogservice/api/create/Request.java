@@ -11,9 +11,9 @@ public record Request(String serviceName, String logLevel, String message) imple
   }
 
   public void assertValid() {
-    Assert.IsNotEmpty(serviceName, "Service name must not be null");
-    Assert.IsNotEmpty(logLevel, "Log level must not be null");
-    Assert.IsNotEmpty(message, "Message must not be null");
-    Assert.IsInvocable(this::getLogLevel, "Unable to evaluate log level");
+    Assert.isNotEmpty(serviceName, "Service name must not be null");
+    Assert.isNotEmpty(logLevel, "Log level must not be null");
+    Assert.isNotEmpty(message, "Message must not be null");
+    Assert.isInvocable(this::getLogLevel, "Unable to evaluate log level");
   }
 }
